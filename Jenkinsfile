@@ -31,6 +31,7 @@ pipeline {
         stage('Testing'){
             steps{
                 git branch: 'master', url: 'https://github.com/IntelliqDevops/FunctionalTesting.git'
+                sh 'java -jar $WORKSPACE/testing.jar'
             }
         }
     }
