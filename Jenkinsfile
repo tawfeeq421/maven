@@ -10,5 +10,10 @@ pipeline{
                 git branch: 'master', url: 'https://github.com/tawfeeq421/maven.git'
             }
         }
+        stage('Maven Build'){
+            steps{
+                sh 'mvn clean package -DskipTests'
+            }
+        }
     }
 }
