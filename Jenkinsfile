@@ -15,5 +15,8 @@ pipeline{
                 sh 'mvn clean package -DskipTests'
             }
         }
+        stage('Deploy To QA'){
+            sh 'scp $WORKSPACE/target/webapp/webapp*.war ubuntu@172.31.47.43:/var/lib/tomcat10/webapps/test.war'
+        }
     }
 }
