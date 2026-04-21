@@ -1,42 +1,54 @@
-pipeline{
+pipeline {
     agent any
-    tools{
+
+    tools {
         jdk 'jdk21'
         maven 'mvn3'
     }
-    stages{
-        stage('Git Checkout'){
-            steps{
+
+    stages {
+        stage('Git Checkout') {
+            steps {
                 git branch: 'master', url: 'https://github.com/tawfeeq421/maven.git'
             }
         }
-        stage('Maven Build'){
-            steps{
+
+        stage('Maven Build') {
+            steps {
                 sh 'mvn clean package -DskipTests'
             }
         }
-        stage('Deploy To QA'){
-            steps{
-            sh 'scp /var/lib/jenkins/workspace/docker-ci/webapp/target/webapp.war ubuntu@172.31.47.43:/var/lib/tomcat10/webapps/test.war'
+
+        stage('Deploy To QA') {
+            steps {
+                sh '''
+                scp -o StrictHostKeyChecking=no \
+                $WORKSPACE/webapp/target/webapp.war \
+                ubuntu@172.31.47.43:/var/lib/tomcat10/webapps/test.war
+                '''
             }
         }
     }
-    post{
-        always{
-            success{
-                slackSend(
-                    channel: '#maven',
-                    color: 'good',
-                    message: '✅ SUCCESS: ${env.JOB_NAME}#${env.BUILD_NUMBER}\n '
-                )
-                failure{
-                    slackSend(
-                        channel: '#maven',
-                        color: 'danger',
-                        message: '❌ FAILURE: ${env.JOB_NAME}#${env.BUILD_NUMBER}\n See Logs ${env.BUILD_URL}'
-                    )
-                }
-            }
+
+    post {
+        success {
+            slackSend(
+                channel: '#maven',
+                color: 'good',
+                message: "✅ SUCCESS: ${env.JOB_NAME}#${env.BUILD_NUMBER}"
+            )
+        }
+
+        failure {
+            slackSend(
+                channel: '#maven',
+                color: 'danger',
+                message: "❌ FAILURE: ${env.JOB_NAME}#${env.BUILD_NUMBER}\nSee Logs: ${env.BUILD_URL}"
+            )
+        }
+
+        always {
+            echo 'Pipeline finished'
         }
     }
 }
