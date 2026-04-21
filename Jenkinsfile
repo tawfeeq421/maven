@@ -16,7 +16,9 @@ pipeline{
             }
         }
         stage('Deploy To QA'){
+            steps{
             sh 'scp $WORKSPACE/target/webapp/webapp*.war ubuntu@172.31.47.43:/var/lib/tomcat10/webapps/test.war'
-        }
+            }
+                }
     }
 }
