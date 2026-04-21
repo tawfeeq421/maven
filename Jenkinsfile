@@ -19,6 +19,24 @@ pipeline{
             steps{
             sh 'scp /var/lib/jenkins/workspace/docker-ci/webapp/target/webapp.war ubuntu@172.31.47.43:/var/lib/tomcat10/webapps/test.war'
             }
+        }
+    }
+    post{
+        always{
+            success{
+                slackSend(
+                    channel: '#maven',
+                    color: 'good',
+                    message: '✅ SUCCESS: ${env.JOB_NAME}#${env.BUILD_NUMBER}\n '
+                )
+                failure{
+                    slackSend(
+                        channel: '#maven',
+                        color: 'danger',
+                        message: '❌ FAILURE: ${env.JOB_NAME}#${env.BUILD_NUMBER}\n See Logs ${env.BUILD_URL}'
+                    )
                 }
+            }
+        }
     }
 }
