@@ -40,6 +40,7 @@ pipeline {
                 scp -o StrictHostKeyChecking=no \
                 $WORKSPACE/webapp/target/webapp.war \
                 ubuntu@172.31.46.236:/var/lib/tomcat10/webapps/prod.war 
+                '''
             }
         }
     }
